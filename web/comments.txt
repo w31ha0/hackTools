@@ -1,0 +1,31 @@
+http://192.168.8.135: 
+<!-- Bootstrap Core CSS -->
+<!-- Theme CSS -->
+<!-- Custom Fonts -->
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<!-- Navigation -->
+<!-- Brand and toggle get grouped for better mobile display -->
+<!-- Collect the nav links, forms, and other content for toggling -->
+<!-- /.navbar-collapse -->
+<!-- /.container -->
+<!-- Page Header -->
+<!-- Set your background image for this header on the line below. -->
+<!--5a6d78685a7a4637546d705361566c59546d785062464a7654587056656c464953587055616b4a56576b644752574e7151586853534842575555684b6246524551586454656b5a77596d316a4d454e6e5054313943673d3d0a-->
+<!-- Main Content -->
+<!-- Pager -->
+<!-- Footer -->
+<!-- jQuery -->
+<!-- Bootstrap Core JavaScript -->
+<!-- Contact Form JavaScript -->
+<!-- Theme JavaScript -->
+http://192.168.8.135/post.html: 
+<!-- Post Content -->
+http://192.168.8.135/contact.html: 
+<!-- Contact Form - Enter your email address on line 19 of the mail/contact_me.php file to make this form work. -->
+<!-- WARNING: Some web hosts do not allow emails to be sent through forms to common mail hosts like Gmail or Yahoo. It's recommended that you use a private domain email address! -->
+<!-- NOTE: To use the contact form, your site must be on a live web host with PHP! The form will not work locally! -->
